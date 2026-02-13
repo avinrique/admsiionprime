@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Predictor Leads Dashboard</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* Login Page */
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #06BBCC 0%, #0891b2 100%);
+    }
+
+    .login-card {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .login-logo h1 {
+      font-size: 24px;
+      color: #06BBCC;
+    }
+
+    .login-logo p {
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .login-field {
+      margin-bottom: 20px;
+    }
+
+    .login-field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+
+    .login-field input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.2s;
+    }
+
+    .login-field input:focus {
+      outline: none;
+      border-color: #06BBCC;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: #06BBCC;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .login-btn:hover {
+      background: #0891b2;
+    }
+
+    .login-error {
+      background: #fef2f2;
+      color: #dc2626;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+
+    /* Dashboard */
+    .dashboard {
+      display: none;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #06BBCC 0%, #0891b2 100%);
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .user-info {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .logout-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .stats {
+      display: flex;
+      gap: 20px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .stat-value {
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+      padding: 12px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: #06BBCC;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #06BBCC;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #0891b2;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #475569;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #f8fafc;
+      padding: 14px 16px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 13px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 14px;
+    }
+
+    tr:hover {
+      background: #f8fafc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .badge-marks {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .badge-rank {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .rank-range {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #94a3b8;
+    }
+
+    .empty-state h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #64748b;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #64748b;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #06BBCC;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .header-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .stats {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .container {
+        padding: 15px;
+      }
+
+      .table-container {
+        overflow-x: auto;
+      }
+
+      table {
+        min-width: 800px;
+      }
+
+      .login-card {
+        margin: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Page -->
+  <div class="login-container" id="login-page">
+    <div class="login-card">
+      <div class="login-logo">
+        <h1>Predictor Dashboard</h1>
+        <p>Login to view leads</p>
+      </div>
+      <div class="login-error" id="login-error"></div>
+      <form id="login-form">
+        <div class="login-field">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Enter username" required>
+        </div>
+        <div class="login-field">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter password" required>
+        </div>
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="dashboard" id="dashboard">
+    <header class="header">
+      <h1>College Predictor Leads</h1>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="total-leads">-</div>
+          <div>Total Leads</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="today-leads">-</div>
+          <div>Today</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <span class="user-info">Logged in as <strong id="logged-user">-</strong></span>
+        <button class="logout-btn" id="logout-btn">Logout</button>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="controls">
+        <input type="text" class="search-box" id="search" placeholder="Search by name, phone, exam, state...">
+        <button class="btn btn-primary" id="refresh-btn">Refresh</button>
+        <button class="btn btn-secondary" id="export-btn">Export CSV</button>
+      </div>
+
+      <div class="table-container">
+        <div id="loading" class="loading">
+          <div class="spinner"></div>
+          <p>Loading leads...</p>
+        </div>
+
+        <div id="empty" class="empty-state" style="display: none;">
+          <h2>No leads yet</h2>
+          <p>Leads from the college predictor will appear here</p>
+        </div>
+
+        <table id="leads-table" style="display: none;">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>State</th>
+              <th>Exam</th>
+              <th>Input</th>
+              <th>Predicted Rank</th>
+              <th>Category</th>
+              <th>Branch</th>
+            </tr>
+          </thead>
+          <tbody id="leads-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = '/api';
+    let allLeads = [];
+    let authToken = localStorage.getItem('auth_token');
+
+    // Check if already logged in
+    async function checkAuth() {
+      if (!authToken) {
+        showLogin();
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/auth/verify`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const data = await response.json();
+
+        if (data.valid) {
+          showDashboard(data.username);
+        } else {
+          localStorage.removeItem('auth_token');
+          authToken = null;
+          showLogin();
+        }
+      } catch (error) {
+        showLogin();
+      }
+    }
+
+    function showLogin() {
+      document.getElementById('login-page').style.display = 'flex';
+      document.getElementById('dashboard').style.display = 'none';
+    }
+
+    function showDashboard(username) {
+      document.getElementById('login-page').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      document.getElementById('logged-user').textContent = username;
+      fetchLeads();
+    }
+
+    // Login form
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorEl = document.getElementById('login-error');
+
+      try {
+        const response = await fetch(`${API_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          authToken = data.token;
+          localStorage.setItem('auth_token', authToken);
+          errorEl.style.display = 'none';
+          showDashboard(data.username);
+        } else {
+          errorEl.textContent = data.error || 'Login failed';
+          errorEl.style.display = 'block';
+        }
+      } catch (error) {
+        errorEl.textContent = 'Connection error. Please try again.';
+        errorEl.style.display = 'block';
+      }
+    });
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      try {
+        await fetch(`${API_URL}/auth/logout`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+      } catch (e) {}
+
+      localStorage.removeItem('auth_token');
+      authToken = null;
+      showLogin();
+    });
+
+    async function fetchLeads() {
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('leads-table').style.display = 'none';
+      document.getElementById('empty').style.display = 'none';
+
+      try {
+        const response = await fetch(`${API_URL}/leads`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        if (response.status === 401) {
+          localStorage.removeItem('auth_token');
+          authToken = null;
+          showLogin();
+          return;
+        }
+
+        allLeads = await response.json();
+        renderLeads(allLeads);
+        updateStats(allLeads);
+      } catch (error) {
+        console.error('Failed to fetch leads:', error);
+        document.getElementById('loading').innerHTML = '<p style="color: #ef4444;">Failed to load leads. Please try again.</p>';
+      }
+    }
+
+    function renderLeads(leads) {
+      document.getElementById('loading').style.display = 'none';
+
+      if (leads.length === 0) {
+        document.getElementById('empty').style.display = 'block';
+        document.getElementById('leads-table').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('empty').style.display = 'none';
+      document.getElementById('leads-table').style.display = 'table';
+
+      const tbody = document.getElementById('leads-tbody');
+      tbody.innerHTML = leads.map(lead => {
+        const date = new Date(lead.createdAt || lead.timestamp);
+        const dateStr = date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        const timeStr = date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+        const inputBadge = lead.inputType === 'marks'
+          ? `<span class="badge badge-marks">${lead.inputValue} marks</span>`
+          : `<span class="badge badge-rank">Rank ${lead.inputValue}</span>`;
+
+        const rankRange = lead.predictedRank
+          ? `#${lead.predictedRank.best.toLocaleString()} - #${lead.predictedRank.worst.toLocaleString()}`
+          : '-';
+
+        return `
+          <tr>
+            <td>${dateStr}<br><small style="color:#94a3b8">${timeStr}</small></td>
+            <td><strong>${lead.name || '-'}</strong></td>
+            <td>${lead.phone || '-'}</td>
+            <td>${lead.email || '-'}</td>
+            <td>${lead.state || '-'}</td>
+            <td>${lead.exam || '-'}</td>
+            <td>${inputBadge}</td>
+            <td class="rank-range">${rankRange}</td>
+            <td>${lead.category === '__all__' ? 'All' : lead.category || '-'}</td>
+            <td>${lead.branch === '__all__' ? 'All' : lead.branch || '-'}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateStats(leads) {
+      document.getElementById('total-leads').textContent = leads.length;
+
+      const today = new Date().toDateString();
+      const todayLeads = leads.filter(lead => {
+        const leadDate = new Date(lead.createdAt || lead.timestamp).toDateString();
+        return leadDate === today;
+      });
+      document.getElementById('today-leads').textContent = todayLeads.length;
+    }
+
+    function filterLeads(query) {
+      if (!query) {
+        renderLeads(allLeads);
+        return;
+      }
+
+      const q = query.toLowerCase();
+      const filtered = allLeads.filter(lead =>
+        (lead.name && lead.name.toLowerCase().includes(q)) ||
+        (lead.phone && lead.phone.includes(q)) ||
+        (lead.email && lead.email.toLowerCase().includes(q)) ||
+        (lead.state && lead.state.toLowerCase().includes(q)) ||
+        (lead.exam && lead.exam.toLowerCase().includes(q))
+      );
+      renderLeads(filtered);
+    }
+
+    function exportCSV() {
+      if (allLeads.length === 0) {
+        alert('No leads to export');
+        return;
+      }
+
+      const headers = ['Date', 'Name', 'Phone', 'Email', 'State', 'Exam', 'Input Type', 'Input Value', 'Rank Best', 'Rank Worst', 'Category', 'Branch'];
+      const rows = allLeads.map(lead => [
+        new Date(lead.createdAt || lead.timestamp).toISOString(),
+        lead.name || '',
+        lead.phone || '',
+        lead.email || '',
+        lead.state || '',
+        lead.exam || '',
+        lead.inputType || '',
+        lead.inputValue || '',
+        lead.predictedRank?.best || '',
+        lead.predictedRank?.worst || '',
+        lead.category || '',
+        lead.branch || ''
+      ]);
+
+      const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `predictor-leads-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Event listeners
+    document.getElementById('search').addEventListener('input', (e) => filterLeads(e.target.value));
+    document.getElementById('refresh-btn').addEventListener('click', fetchLeads);
+    document.getElementById('export-btn').addEventListener('click', exportCSV);
+
+    // Initial auth check
+    checkAuth();
+  </script>
+</body>
+</html>
