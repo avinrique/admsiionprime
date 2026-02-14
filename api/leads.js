@@ -12,8 +12,7 @@
 
 import { MongoClient } from 'mongodb';
 
-const MONGODB_URI = process.env.MONGODB_URI;
-const DB_NAME = 'predictor';
+const MONGODB_URI = "mongodb+srv://Avin:Avin@cluster0.ayk9r.mongodb.net/predictor?retryWrites=true&w=majority&appName=Cluster0"
 const COLLECTION_NAME = 'leads';
 
 let cachedClient = null;
